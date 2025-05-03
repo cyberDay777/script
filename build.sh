@@ -20,6 +20,6 @@ git clone https://gitlab.com/ImSurajxD/clang-r450784d.git prebuilts/clang/host/l
 export PATH="$HOME/tmp/src/android/prebuilts/clang/host/linux-x86/clang-r450784d/bin:$PATH"
 rm -rf hardware/google/pixel/kernel_headers
 source build/envsetup.sh
-lunch lineage_chenfeng-bp1a-userdebug
+lunch lineage_chenfeng-ap2a-userdebug
 export SELINUX_IGNORE_NEVERALLOWS=true
 make bacon
