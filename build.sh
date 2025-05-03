@@ -7,6 +7,8 @@ echo "                  by                  "
 echo "            CyberDay777.              "
 echo "--------------------------------------"
 echo
+rm -rf hardware/xiaomi
+git clone https://github.com/LineageOS/android_hardware_xiaomi.git hardware/xiaomi
 rm -rf device/xiaomi/chenfeng
 git clone https://github.com/cyberDay777/device_xiaomi_peridot.git device/xiaomi/chenfeng
 rm -rf kernel/xiaomi/chenfeng
