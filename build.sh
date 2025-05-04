@@ -22,4 +22,5 @@ export PATH="$HOME/tmp/src/android/prebuilts/clang/host/linux-x86/clang-r450784d
 rm -rf hardware/google/pixel/kernel_headers
 source build/envsetup.sh
 export SELINUX_IGNORE_NEVERALLOWS=true
-breakfast chenfeng
+lunch lineage_chenfeng-ap2a-userdebug
+mka bacon
