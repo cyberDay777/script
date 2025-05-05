@@ -22,4 +22,5 @@ rm -rf hardware/google/pixel/kernel_headers
 source build/envsetup.sh
 export SELINUX_IGNORE_NEVERALLOWS=true
 breakfast chenfeng
+make clean
 mka bacon
