@@ -7,20 +7,46 @@ echo "                  by                  "
 echo "            CyberDay777.              "
 echo "--------------------------------------"
 echo
-rm -rf hardware/xiaomi
-rm -rf device/xiaomi/chenfeng
-git clone https://github.com/cyberDay777/device_xiaomi_peridot.git device/xiaomi/chenfeng
-rm-rf device/xiaomi/chenfeng-kernel
-rm-rf device/xiaomi/chenfeng-prebuilt
-git clone https://github.com/PixelOS-Devices/device_xiaomi_peridot-kernel.git device/xiaomi/chenfeng-kernel
-rm -rf vendor/xiaomi/chenfeng
-git clone https://github.com/cyberDay777/vendor_xiaomi_chenfeng.git vendor/xiaomi/chenfeng
-rm -rf prebuilts/clang/host/linux-x86/clang-r450784d
-git clone https://gitlab.com/ImSurajxD/clang-r450784d.git prebuilts/clang/host/linux-x86/clang-r450784d
-export PATH="$HOME/tmp/src/android/prebuilts/clang/host/linux-x86/clang-r450784d/bin:$PATH"
+#!/bin/bash
+
+# Define remotes
+declare -A remotes
+remotes["chenfeng"]="https://github.com/xiaomi-chenfieng-devs"
+remotes["peridot-dev"]="https://github.com/peridot-dev"
+
+# Array of project data: path|name|remote
+projects=(
+  "hardware/qcom-caf/common|android_hardware_qcom-caf_common|chenfeng"
+  "hardware/qcom-caf/sm8650/audio/agm|android_vendor_qcom_opensource_agm|chenfeng"
+  "hardware/qcom-caf/sm8650/audio/pal|android_vendor_qcom_opensource_arpal-lx|chenfeng"
+  "hardware/qcom-caf/sm8650/audio/primary-hal|android_hardware_qcom_audio-ar|chenfeng"
+  "hardware/qcom-caf/sm8650/data-ipa-cfg-mgr|android_vendor_qcom_opensource_data-ipa-cfg-mgr|chenfeng"
+  "hardware/qcom-caf/sm8650/dataipa|android_vendor_qcom_opensource_dataipa|chenfeng"
+  "hardware/qcom-caf/sm8650/display|android_hardware_qcom_display|chenfeng"
+  "hardware/qcom-caf/sm8650/media|android_hardware_qcom_media|chenfeng"
+  "device/qcom/sepolicy_vndr/sm8650|android_device_qcom_sepolicy_vndr|chenfeng"
+  "device/xiaomi/chenfeng|device_xiaomi_chenfeng|chenfeng"
+  "vendor/xiaomi/chenfeng|vendor_xiaomi_chenfeng|chenfeng"
+  "device/xiaomi/chenfeng-prebuilt|device_xiaomi_chenfeng-kernel|chenfeng"
+  "hardware/xiaomi|hardware_xiaomi|chenfeng"
+)
+
+# Iterate and process each project
+for project in "${projects[@]}"; do
+  IFS='|' read -r path name remote <<< "$project"
+  echo "Removing $path"
+  rm -rf "$path"
+
+  url="${remotes[$remote]}/$name.git"
+  echo "Cloning $url into $path"
+  git clone "$url" "$path"
+done
+
+echo "All specified directories have been removed and repositories cloned."
+
 rm -rf hardware/google/pixel/kernel_headers
-source build/envsetup.sh
-export SELINUX_IGNORE_NEVERALLOWS=true
-breakfast chenfeng
-make clean
-mka bacon
+#source build/envsetup.sh
+#export SELINUX_IGNORE_NEVERALLOWS=true
+#breakfast chenfeng
+#make clean
+#mka bacon
