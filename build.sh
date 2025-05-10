@@ -27,10 +27,10 @@ projects=(
   "hardware/qcom-caf/sm8650/display|android_hardware_qcom_display|chenfeng|lineage-22.2-caf-sm8650"
   "hardware/qcom-caf/sm8650/media|android_hardware_qcom_media|chenfeng|lineage-22.2-caf-sm8650"
   "device/qcom/sepolicy_vndr/sm8650|android_device_qcom_sepolicy_vndr|chenfeng|lineage-22.2-caf-sm8650"
-  "device/xiaomi/chenfeng|device_xiaomi_chenfeng|chenfeng|lineage-22.2"
-  "vendor/xiaomi/chenfeng|vendor_xiaomi_chenfeng|chenfeng|main"
-  "device/xiaomi/chenfeng-prebuilt|device_xiaomi_chenfeng-kernel|chenfeng|lineage-22.2"
-  "hardware/xiaomi|hardware_xiaomi|chenfeng|lineage-22.2"
+  "device/xiaomi/chenfeng|device_xiaomi_chenfeng|chenfeng|"
+  "vendor/xiaomi/chenfeng|vendor_xiaomi_chenfeng|chenfeng|"
+  "device/xiaomi/chenfeng-prebuilt|device_xiaomi_chenfeng-kernel|chenfeng|"
+  "hardware/xiaomi|hardware_xiaomi|chenfeng|"
 )
 
 for project in "${projects[@]}"; do
