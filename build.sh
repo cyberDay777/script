@@ -9,45 +9,49 @@ echo "--------------------------------------"
 echo
 #!/bin/bash
 
-#!/bin/bash
+# Manifest URL
+MANIFEST_URL="https://raw.githubusercontent.com/xiaomi-chenfieng-devs/local_manifests/refs/heads/main/manifest.xml"
+MANIFEST_FILE="$HOME/manifest.xml"
 
-# Define remotes
+# Download manifest
+wget -q "$MANIFEST_URL" -O "$MANIFEST_FILE"
+if [ ! -f "$MANIFEST_FILE" ]; then
+    echo "Failed to download manifest."
+    exit 1
+fi
+
+echo "Manifest downloaded."
+
+# Build remote map
 declare -A remotes
-remotes["chenfeng"]="https://github.com/xiaomi-chenfieng-devs"
-remotes["peridot-dev"]="https://github.com/peridot-dev"
+while read -r line; do
+    name=$(echo "$line" | grep -o 'name="[^"]*"' | cut -d'"' -f2)
+    fetch=$(echo "$line" | grep -o 'fetch="[^"]*"' | cut -d'"' -f2)
+    [ -n "$name" ] && [ -n "$fetch" ] && remotes["$name"]="$fetch"
+done < <(grep '<remote ' "$MANIFEST_FILE")
 
-# Array of project data: path|name|remote|revision(optional)
-projects=(
-  "hardware/qcom-caf/common|android_hardware_qcom-caf_common|chenfeng|"
-  "hardware/qcom-caf/sm8650/audio/agm|android_vendor_qcom_opensource_agm|chenfeng|lineage-22.2-caf-sm8650"
-  "hardware/qcom-caf/sm8650/audio/pal|android_vendor_qcom_opensource_arpal-lx|chenfeng|lineage-22.2-caf-sm8650"
-  "hardware/qcom-caf/sm8650/audio/primary-hal|android_hardware_qcom_audio-ar|chenfeng|lineage-22.2-caf-sm8650"
-  "hardware/qcom-caf/sm8650/data-ipa-cfg-mgr|android_vendor_qcom_opensource_data-ipa-cfg-mgr|chenfeng|lineage-22.2-caf-sm8650"
-  "hardware/qcom-caf/sm8650/dataipa|android_vendor_qcom_opensource_dataipa|chenfeng|lineage-22.2-caf-sm8650"
-  "hardware/qcom-caf/sm8650/display|android_hardware_qcom_display|chenfeng|lineage-22.2-caf-sm8650"
-  "hardware/qcom-caf/sm8650/media|android_hardware_qcom_media|chenfeng|lineage-22.2-caf-sm8650"
-  "device/qcom/sepolicy_vndr/sm8650|android_device_qcom_sepolicy_vndr|chenfeng|lineage-22.2-caf-sm8650"
-  "device/xiaomi/chenfeng|device_xiaomi_chenfeng|chenfeng|"
-  "vendor/xiaomi/chenfeng|vendor_xiaomi_chenfeng|chenfeng|"
-  "device/xiaomi/chenfeng-prebuilt|device_xiaomi_chenfeng-kernel|chenfeng|"
-  "hardware/xiaomi|hardware_xiaomi|chenfeng|"
-)
+# Process each project
+grep '<project ' "$MANIFEST_FILE" | while read -r line; do
+    name=$(echo "$line" | grep -o 'name="[^"]*"' | cut -d'"' -f2)
+    remote=$(echo "$line" | grep -o 'remote="[^"]*"' | cut -d'"' -f2)
+    path=$(echo "$line" | grep -o 'path="[^"]*"' | cut -d'"' -f2)
 
-for project in "${projects[@]}"; do
-  IFS='|' read -r path name remote revision <<< "$project"
-  echo "Removing $path"
-  rm -rf "$path"
+    [ -z "$remote" ] && remote="origin"
+    [ -z "$path" ] && path="$name"
+    url="${remotes[$remote]}/$name.git"
 
-  url="${remotes[$remote]}/$name.git"
-  echo "Cloning $url into $path"
-  if [[ -n "$revision" ]]; then
-    git clone -b "$revision" "$url" "$path"
-  else
-    git clone "$url" "$path"
-  fi
+    echo -e "\nCloning $url -> $path"
+    git clone --depth=1 "$url" "$path" &>/dev/null
+
+    if [ -d "$path" ]; then
+        echo "✔️ Path exists: $path"
+    else
+        echo "❌ Clone failed or path missing: $path"
+    fi
 done
 
-echo "All specified directories have been removed and repositories cloned."
+rm -f "$MANIFEST_FILE"
+
 rm -rf hardware/google/pixel/kernel_headers
 source build/envsetup.sh
 export SELINUX_IGNORE_NEVERALLOWS=true
